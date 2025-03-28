@@ -230,6 +230,11 @@ func (txl *TransactionLayer) clientTxCreate(ctx context.Context, req *Request, k
 	if err != nil {
 		return nil, err
 	}
+	if req.Contact() != nil && req.Contact().Address.Port == 0 {
+		if _, port, err := ParseAddr(conn.LocalAddr().String()); err == nil {
+			req.Contact().Address.Port = port
+		}
+	}
 
 	tx := NewClientTx(key, req, conn, txl.log)
 	return tx, tx.Init()
